@@ -21,7 +21,7 @@ def mostrar_equipos_conferencia():
     if equipos_conferencia:
         print(f"\nEquipos de la conferencia {conferencia_usuario}:")
         for equipo in equipos_conferencia:
-            print(equipo)
+            print("- ", equipo)
     else:
         print(f"\nNo se encontraron equipos en la conferencia {conferencia_usuario}.")
 
@@ -53,8 +53,10 @@ def contar_jugadores_altura():
 
         if jugadores_altura:
             print(f"\nJugadores que miden {altura_usuario} cm:")
+            print("\n{:<20}| {:<25}".format("Jugador", "Equipo"))
+            print("-" * 55)
             for jugador, equipo in jugadores_altura:
-                print(f"- {jugador} - Equipo: {equipo}")
+                print("{:<20} {:<25}".format(jugador, equipo))
         else:
             print(f"\nNo se encontraron jugadores de {altura_usuario} cm")
         print(f"\nTotal de jugadores con altura igual a {altura_usuario} cm: {total_jugadores_altura}")
@@ -95,28 +97,43 @@ def buscar_jugadores_edad():
         jugadores_edad = buscar_jugadores_por_edad(edad_usuario, equipos)
         if jugadores_edad:
             print(f"\nJugadores de {edad_usuario} años:")
+            print("\n{:<20}| {:<25}".format("Jugador", "Equipo"))
+            print("-" * 55)
             for jugador, equipo in jugadores_edad:
-                print(f"- {jugador} - Equipo: {equipo}")
+                print("{:<20} {:<25}".format(jugador, equipo))
         else:
             print(f"\nNo se encontraron jugadores de {edad_usuario} años")
     except ValueError:
         print("La edad debe ser un valor numérico entero positivo.")
 
-#5. Ejercicio libre: Mostrar el promedio de altura de los jugadores de cada equipo.
+#5. Ejercicio libre: Mostrar el promedio de altura de los jugadores de cada equipo, el jugador más alto y el más bajo de cada equipo.
 def promedio_altura_por_equipo(equipos):
     promedios = {}
     for equipo in equipos:
-        total_altura = sum(jugador["height_cm"] for jugador in equipo["players"])
-        promedio = total_altura / len(equipo["players"])
-        promedios[equipo["teamName"]] = promedio
+        jugadores = equipo["players"]
+        mas_alto = max(jugadores, key=lambda x: x["height_cm"])
+        mas_bajo = min(jugadores, key=lambda x: x["height_cm"])
+        total_altura = sum(jugador["height_cm"] for jugador in jugadores)
+        promedio = total_altura / len(jugadores)
+        promedios[equipo["teamName"]] = {
+            "promedio": promedio,
+            "mas_alto": mas_alto,
+            "mas_bajo": mas_bajo
+        }
     return promedios
 
 def promedio_altura_equipo():
     equipos = cargar_datos()
     promedios_altura = promedio_altura_por_equipo(equipos)
     print("\nPromedio de altura por equipo:")
-    for equipo, promedio in promedios_altura.items():
-        print(f"- {equipo}: {promedio:.2f} cm")
+    print("\n{:<25}| {:<25}| {:<25}| {:<25}".format("Equipo", "Promedio de altura (cm)", "Máxima altura (cm)", "Mínima altura (cm)"))
+    print("-" * 105)
+    for equipo, info in promedios_altura.items():
+        nombre_mas_alto = info['mas_alto']['name']
+        altura_mas_alto = info['mas_alto']['height_cm']
+        nombre_mas_bajo = info['mas_bajo']['name']
+        altura_mas_bajo = info['mas_bajo']['height_cm']
+        print("{:<25} {:<26.2f} {:<21} {:<5} {:<21} {:<5}".format(equipo, info['promedio'], nombre_mas_alto, altura_mas_alto, nombre_mas_bajo, altura_mas_bajo))
 
 def menu():
     opciones = {
